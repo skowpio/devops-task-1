@@ -36,7 +36,6 @@ ssh -i ~/.ssh/xapo-interview.pem  ec2-user@<BASTION_PUBLIC_IP>
 ```
 curl -q -s http://<NGINX_1_PRIVATE_IP>
 ```
-3. 
 
 ```
 curl -q -s http://<NGINX_2_PRIVATE_IP>
