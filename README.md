@@ -6,7 +6,6 @@
 
 ```
 values/development-task-hr-eu-west-1.tfvars
-
 ```
 
 File has got region in name, just in case someone would like to deploy that onto multi-regions. 
@@ -20,11 +19,9 @@ File has got region in name, just in case someone would like to deploy that onto
 ```
 terraform init -reconfigure
 
-
 terraform plan -var-file values/development-task-hr-eu-west-1.tfvars -var="aws_access_key=XXXXXXXX" -var="aws_secret_key=YYYYYYYYYYYYYYYYYYYYY" -out plan.out
 
 terraform apply plan.out
-
 ```
 
 ## Checks 
@@ -39,13 +36,11 @@ ssh -i ~/.ssh/xapo-interview.pem  ec2-user@<BASTION_PUBLIC_IP>
 
 ```
 curl -q -s http://<NGINX_1_PRIVATE_IP>
-
 ```
 3. 
 
 ```
 curl -q -s http://<NGINX_2_PRIVATE_IP>
-
 ```
 
 ## Improvments - proposal how to make this task even better. 
