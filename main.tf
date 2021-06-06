@@ -28,15 +28,6 @@ locals {
   private_subnets  = length(var.private_subnets) > 0 ? var.private_subnets : []
   public_subnets   = length(var.public_subnets) > 0 ? var.public_subnets : []
 
-  user_data = <<EOF
-#!/bin/bash
-sudo amazon-linux-extras install nginx1
-TOKEN=`curl -q -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` \
-&& curl -q -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/availability-zone > /usr/share/nginx/html/index.html
-systemctl enable nginx
-systemctl start nginx
-EOF
-
 }
 
 module "vpc" {
@@ -141,7 +132,7 @@ module "ec2_nginx" {
   version                = "~> 2.0"
 
   name                   = "nginx"
-  instance_count         = 1
+  instance_count         = 2
 
   ami                    = data.aws_ami.amazon-linux-2.id
   instance_type          = var.instance_type
@@ -152,7 +143,7 @@ module "ec2_nginx" {
     module.vpc.private_subnets
   ])
 
-  user_data_base64 = base64encode(local.user_data)
+  user_data_base64 = base64encode(file("${path.module}/scripts/nginx_userdata.sh"))
 
   tags = {
     Automation = local.module_name
