@@ -31,7 +31,7 @@ terraform apply plan.out
 ```
 ssh -i ~/.ssh/xapo-interview.pem  ec2-user@<BASTION_PUBLIC_IP>
 ```
-2. Check out index.html on both nginx nodes 
+2. Check out index.html on both nginx nodes from bastion host
 
 ```
 curl -q -s http://<NGINX_1_PRIVATE_IP>
