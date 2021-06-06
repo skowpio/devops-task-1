@@ -27,6 +27,16 @@ locals {
   azs              = slice(data.aws_availability_zones.available.names, 0, var.azs_count)
   private_subnets  = length(var.private_subnets) > 0 ? var.private_subnets : []
   public_subnets   = length(var.public_subnets) > 0 ? var.public_subnets : []
+
+  user_data = <<EOF
+#!/bin/bash
+sudo amazon-linux-extras install nginx1
+TOKEN=`curl -q -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` \
+&& curl -q -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/availability-zone > /usr/share/nginx/html/index.html
+systemctl enable nginx
+systemctl start nginx
+EOF
+
 }
 
 module "vpc" {
@@ -86,7 +96,7 @@ module "ec2_bastion" {
   monitoring             = false
   vpc_security_group_ids = [module.bastion_host_sg.security_group_id]
   subnet_ids             = flatten([
-    local.public_subnets
+    module.vpc.public_subnets
   ])
 
   tags = {
@@ -123,4 +133,32 @@ module "nginx_host_sg" {
     Terraform = "true"
     Environment = var.stage
   }
+}
+
+
+module "ec2_nginx" {
+  source                 = "terraform-aws-modules/ec2-instance/aws"
+  version                = "~> 2.0"
+
+  name                   = "nginx"
+  instance_count         = 1
+
+  ami                    = data.aws_ami.amazon-linux-2.id
+  instance_type          = var.instance_type
+  key_name               = var.key_pair
+  monitoring             = false
+  vpc_security_group_ids = [module.nginx_host_sg.security_group_id]
+  subnet_ids             = flatten([
+    module.vpc.private_subnets
+  ])
+
+  user_data_base64 = base64encode(local.user_data)
+
+  tags = {
+    Automation = local.module_name
+    Project    = local.project_name
+    Terraform = "true"
+    Environment = var.stage
+  }
+
 }
