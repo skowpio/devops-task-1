@@ -17,7 +17,7 @@ File has got region in name, just in case someone would like to deploy that onto
 ## Deploy infrastructure
 
 ```
-terraform init -reconfigure
+terraform init
 
 terraform plan -var-file values/development-task-hr-eu-west-1.tfvars -var="aws_access_key=XXXXXXXX" -var="aws_secret_key=YYYYYYYYYYYYYYYYYYYYY" -out plan.out
 
@@ -30,7 +30,6 @@ terraform apply plan.out
 
 ```
 ssh -i ~/.ssh/xapo-interview.pem  ec2-user@<BASTION_PUBLIC_IP>
-
 ```
 2. Check out index.html on both nginx nodes 
 
