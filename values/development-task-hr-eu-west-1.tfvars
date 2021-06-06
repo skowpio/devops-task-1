@@ -1,4 +1,5 @@
 region = "eu-west-1"
+instance_type = "t3a.micro"
 name = "xapo-hr-task"
 stage = "dev"
 public_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
